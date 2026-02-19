@@ -1,94 +1,146 @@
-import { AboutXolopage } from "../../Models/AboutPage/AboutPage.js";
+import { AboutPage } from "../../Models/AboutPage/AboutPage.js";
 import uploadOnCloudinary from "../../Utils/Clodinary.js";
 
-const getFile = (files, fieldName) => {
-  if (Array.isArray(files)) {
-    return files.find(f => f.fieldname === fieldName);
+// Helper to find file in req.files array (since we use upload.any())
+const getFileUrl = async (files, fieldname) => {
+  const file = files?.find((f) => f.fieldname === fieldname);
+  if (file) {
+    const upload = await uploadOnCloudinary(file.path);
+    return upload?.secure_url || null;
   }
-  return files && files[fieldName] ? files[fieldName][0] : null;
+  return null;
 };
 
+/* ================= GET ================= */
 export const getAboutPage = async (req, res) => {
   try {
-    const data = await AboutXolopage.findOne();
+    const data = await AboutPage.findOne();
     return res.status(200).json({ success: true, data: data });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
 
+/* ================= CREATE ================= */
 export const createAboutPage = async (req, res) => {
   try {
-    const existing = await AboutXolopage.findOne();
-    if (existing) return res.status(400).json({ success: false, message: "Page data already exists." });
+    const existing = await AboutPage.findOne();
+    if (existing) {
+      return res.status(400).json({ success: false, message: "About Page already exists. Use Update." });
+    }
 
     const body = req.body;
     const files = req.files || [];
 
-    const singleImageFields = ["OurStoryImg", "OurMissionImg", "OurVisionImg"];
-    for (const field of singleImageFields) {
-      const file = getFile(files, field);
-      if (file) {
-        const upload = await uploadOnCloudinary(file.path);
-        if (upload) body[field] = upload.secure_url;
+    // 1. Handle Top-Level Images
+    const imageFields = [
+      "aboutImg1", "aboutImg2", "aboutImg3",
+      "ourMissionCard1Icon", "ourMissionCard2Icon", "ourMissionCard3Icon"
+    ];
+    
+    const imageUrls = {};
+    for (const field of imageFields) {
+      const url = await getFileUrl(files, field);
+      if (url) imageUrls[field] = url;
+      else return res.status(400).json({ message: `${field} is required.` });
+    }
+
+    // 2. Handle Team Members
+    let team = [];
+    if (body.Ourteam) {
+      try {
+        team = JSON.parse(body.Ourteam);
+      } catch (e) {
+        return res.status(400).json({ message: "Invalid Ourteam JSON format" });
       }
     }
 
-    if (body.OurTeam) body.OurTeam = JSON.parse(body.OurTeam);
-    if (body.whytochosecards) body.whytochosecards = JSON.parse(body.whytochosecards);
+    // Upload Team Images (team_img_0, team_img_1...)
+    for (let i = 0; i < team.length; i++) {
+      const url = await getFileUrl(files, `team_img_${i}`);
+      if (url) {
+        team[i].img = url;
+      } else if (!team[i].img) {
+        return res.status(400).json({ message: `Image required for team member ${i + 1}` });
+      }
+    }
 
-    const newPage = new AboutXolopage(body);
+    const newPage = new AboutPage({
+      ...body,
+      ...imageUrls,
+      Ourteam: team
+    });
+
     await newPage.save();
-    return res.status(201).json({ success: true, data: newPage });
+    return res.status(201).json({ success: true, message: "Created Successfully", data: newPage });
+
   } catch (err) {
+    console.error(err);
     return res.status(500).json({ success: false, message: err.message });
   }
 };
 
+/* ================= UPDATE ================= */
 export const updateAboutPage = async (req, res) => {
   try {
-    const { id } = req.params;
+    const existing = await AboutPage.findOne();
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "About Page not found." });
+    }
+
     const body = req.body;
     const files = req.files || [];
+    const updates = { ...body };
 
-    const singleImageFields = ["OurStoryImg", "OurMissionImg", "OurVisionImg"];
-    for (const field of singleImageFields) {
-      const file = getFile(files, field);
-      if (file) {
-        const upload = await uploadOnCloudinary(file.path);
-        if (upload) body[field] = upload.secure_url;
-      }
+    // 1. Handle Top-Level Images
+    const imageFields = [
+      "aboutImg1", "aboutImg2", "aboutImg3",
+      "ourMissionCard1Icon", "ourMissionCard2Icon", "ourMissionCard3Icon"
+    ];
+
+    for (const field of imageFields) {
+      const url = await getFileUrl(files, field);
+      if (url) updates[field] = url;
     }
 
-    if (body.OurTeam) {
-      const teamMembers = JSON.parse(body.OurTeam);
-      for (let i = 0; i < teamMembers.length; i++) {
-        const file = getFile(files, `TeamImg_${i}`);
-        if (file) {
-          const upload = await uploadOnCloudinary(file.path);
-          if (upload) teamMembers[i].Img = upload.secure_url;
+    // 2. Handle Team Members
+    if (body.Ourteam) {
+      let team = [];
+      try {
+        team = JSON.parse(body.Ourteam);
+      } catch (e) {
+        return res.status(400).json({ message: "Invalid Ourteam JSON format" });
+      }
+
+      for (let i = 0; i < team.length; i++) {
+        const url = await getFileUrl(files, `team_img_${i}`);
+        if (url) {
+          team[i].img = url;
         }
+        // If no new URL, keep existing (handled by frontend sending existing URL in JSON)
       }
-      body.OurTeam = teamMembers;
+      updates.Ourteam = team;
     }
 
-    if (body.whytochosecards) body.whytochosecards = JSON.parse(body.whytochosecards);
+    const updatedPage = await AboutPage.findByIdAndUpdate(
+      existing._id,
+      { $set: updates },
+      { new: true }
+    );
 
-    const updatedPage = await AboutXolopage.findByIdAndUpdate(id, { $set: body }, { new: true });
-    return res.status(200).json({ success: true, data: updatedPage });
+    return res.status(200).json({ success: true, message: "Updated Successfully", data: updatedPage });
+
   } catch (err) {
+    console.error(err);
     return res.status(500).json({ success: false, message: err.message });
   }
 };
+
 /* ================= DELETE ================= */
 export const deleteAboutPage = async (req, res) => {
   try {
-    const { id } = req.params;
-    const deletedPage = await AboutXolopage.findByIdAndDelete(id);
-    if (!deletedPage) {
-      return res.status(404).json({ success: false, message: "About Page not found" });
-    }
-    return res.status(200).json({ success: true, message: "About Page Deleted Successfully" });
+    await AboutPage.findOneAndDelete({});
+    return res.status(200).json({ success: true, message: "Deleted Successfully" });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }

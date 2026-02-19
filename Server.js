@@ -41,9 +41,7 @@ import IndustrialSecRouter from "./src/Routers/Global/Industrial.js";
 import FaqSecRouter from "./src/Routers/Global/Faq.js";
 import BlogSecRouter from "./src/Routers/Global/Blogs.js";
 
-import AboutPagerouter from "./src/Routers/AboutPage/AboutPage.js";
-import WhyChooseUsPageRouter from "./src/Routers/AboutPage/WhyChooseUs.js";
-import AskXoloPageRouter from "./src/Routers/AboutPage/AskXolo.js";
+
 import RefundPolicyRouter from "./src/Routers/Refund/Refund.js";
 import TermsRouter from "./src/Routers/TermsandCondition/TermsandCondition.js";
 import MetaRouter from "./src/Routers/Global/meta.routes.js";
@@ -54,6 +52,8 @@ import GalleryEventRouter from "./src/Routers/Global/Gallery.js";
 import OwnersTalkSecRouter from "./src/Routers/Homepage/OwnersTalks.js";
 import NewsSecRouter from "./src/Routers/Homepage/NewsSec.js";
 import NewsRouter from "./src/Routers/Global/News.js";
+import AboutPageRouter from "./src/Routers/AboutPage/AboutPage.js";
+import MenuPageRouter from "./src/Routers/MenuPage/MenuPage.js";
 
 
 
@@ -205,11 +205,11 @@ app.use("/api/v1/faq", FaqSecRouter);
 app.use("/api/v1/blogs", BlogSecRouter);
 
 // About page
-app.use("/api/v1/aboutpage", AboutPagerouter);
-app.use("/api/v1/about/whychooseus", WhyChooseUsPageRouter);
-app.use("/api/v1/about/askxolo", AskXoloPageRouter);
+app.use("/api/v1/aboutpage", AboutPageRouter);
+
 app.use("/api/v1/refundpolicy", RefundPolicyRouter);
 app.use("/api/v1/terms", TermsRouter);
+app.use("/api/v1/menupage", MenuPageRouter);
 
 //Feature page
 // app.use("/api/v1/featurepage", AboutPageRouter);

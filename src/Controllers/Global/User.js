@@ -13,7 +13,8 @@ import { HomeAbout } from "../../Models/HomePage/About.js";
 
 import { Event } from "../../Models/Global/Event.js";
 import { FeatureSec } from "../../Models/HomePage/Features.js";
-import { AboutXolopage } from "../../Models/AboutPage/AboutPage.js";
+import { AboutPage } from "../../Models/AboutPage/AboutPage.js";
+
 
 
 
@@ -223,7 +224,7 @@ export const dashboardData = async (req, res) => {
       HomeBanner:fetchDocs(HomeBanner),
       HomeAbout:fetchDocs(HomeAbout),
       HomeFeature:fetchDocs(FeatureSec),
-      AboutXoloPage:fetchDocs(AboutXolopage),
+      AboutXoloPage:fetchDocs(AboutPage),
 
     };
 

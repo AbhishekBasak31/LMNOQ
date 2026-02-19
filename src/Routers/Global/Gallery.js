@@ -18,7 +18,7 @@ const galleryUploads = upload.fields([
 
 // Public Routes
 GalleryEventRouter.get("/", getAllGalleryEvents);
-GalleryEventRouter.get("/:slug", getGalleryEventBySlug); // Handles both ID and Slug
+GalleryEventRouter.get("/:slug", getGalleryEventBySlug);
 
 // Protected Routes (Add your auth middleware)
 GalleryEventRouter.use(authenticate);
