@@ -42,7 +42,7 @@ import FaqSecRouter from "./src/Routers/Global/Faq.js";
 import BlogSecRouter from "./src/Routers/Global/Blogs.js";
 
 
-import RefundPolicyRouter from "./src/Routers/Refund/Refund.js";
+import RefundPolicyRouter from "./src/Routers/PrivacyPolicy.js/PrivacyPolicy.js";
 import TermsRouter from "./src/Routers/TermsandCondition/TermsandCondition.js";
 import MetaRouter from "./src/Routers/Global/meta.routes.js";
 import AffiliateRouter from "./src/Routers/Affiliationpage/Affiliationpage.js";
@@ -54,6 +54,8 @@ import NewsSecRouter from "./src/Routers/Homepage/NewsSec.js";
 import NewsRouter from "./src/Routers/Global/News.js";
 import AboutPageRouter from "./src/Routers/AboutPage/AboutPage.js";
 import MenuPageRouter from "./src/Routers/MenuPage/MenuPage.js";
+import PrivacyPolicyRouter from "./src/Routers/PrivacyPolicy.js/PrivacyPolicy.js";
+import TermsandConditionRouter from "./src/Routers/TermsandCondition/TermsandCondition.js";
 
 
 
@@ -207,8 +209,8 @@ app.use("/api/v1/blogs", BlogSecRouter);
 // About page
 app.use("/api/v1/aboutpage", AboutPageRouter);
 
-app.use("/api/v1/refundpolicy", RefundPolicyRouter);
-app.use("/api/v1/terms", TermsRouter);
+app.use("/api/v1/privacypolicy", PrivacyPolicyRouter);
+app.use("/api/v1/termsandcon", TermsandConditionRouter);
 app.use("/api/v1/menupage", MenuPageRouter);
 
 //Feature page

@@ -1,4 +1,4 @@
-import { TermsandCondition } from "../../Models/TermsandCondition/TermsandCondition.js";
+import { PrivacyPolicy } from "../../Models/Refund/Refund.js";
 import uploadOnCloudinary from "../../Utils/Clodinary.js";
 
 // Helper to find file in req.files array
@@ -12,9 +12,9 @@ const getFileUrl = async (files, fieldname) => {
 };
 
 /* ================= GET ================= */
-export const getTermsandCondition = async (req, res) => {
+export const getPrivacyPolicy = async (req, res) => {
   try {
-    const data = await TermsandCondition.findOne();
+    const data = await PrivacyPolicy.findOne();
     return res.status(200).json({ success: true, data: data });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
@@ -22,11 +22,11 @@ export const getTermsandCondition = async (req, res) => {
 };
 
 /* ================= CREATE ================= */
-export const createTermsandCondition = async (req, res) => {
+export const createPrivacyPolicy = async (req, res) => {
   try {
-    const existing = await TermsandCondition.findOne();
+    const existing = await PrivacyPolicy.findOne();
     if (existing) {
-      return res.status(400).json({ success: false, message: "Terms and Conditions already exists. Use Update." });
+      return res.status(400).json({ success: false, message: "Policy already exists. Use Update." });
     }
 
     const body = req.body;
@@ -51,7 +51,7 @@ export const createTermsandCondition = async (req, res) => {
       }
     }
 
-    const newPolicy = new TermsandCondition({
+    const newPolicy = new PrivacyPolicy({
       ...body,
       points
     });
@@ -66,11 +66,11 @@ export const createTermsandCondition = async (req, res) => {
 };
 
 /* ================= UPDATE ================= */
-export const updateTermsandCondition = async (req, res) => {
+export const updatePrivacyPolicy = async (req, res) => {
   try {
-    const existing = await TermsandCondition.findOne();
+    const existing = await PrivacyPolicy.findOne();
     if (!existing) {
-      return res.status(404).json({ success: false, message: "Terms and Conditions not found." });
+      return res.status(404).json({ success: false, message: "Policy not found." });
     }
 
     const body = req.body;
@@ -94,7 +94,7 @@ export const updateTermsandCondition = async (req, res) => {
       // If no new URL, keep existing (handled by frontend sending existing URL in JSON)
     }
 
-    const updatedPolicy = await TermsandCondition.findByIdAndUpdate(
+    const updatedPolicy = await PrivacyPolicy.findByIdAndUpdate(
       existing._id,
       { 
         $set: {
@@ -122,9 +122,9 @@ export const updateTermsandCondition = async (req, res) => {
 };
 
 /* ================= DELETE ================= */
-export const deleteTermsandCondition = async (req, res) => {
+export const deletePrivacyPolicy = async (req, res) => {
   try {
-    await TermsandCondition.findOneAndDelete({});
+    await PrivacyPolicy.findOneAndDelete({});
     return res.status(200).json({ success: true, message: "Deleted Successfully" });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });

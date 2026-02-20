@@ -1,22 +1,60 @@
 import mongoose from "mongoose";
-import { SCHEMA } from "../../Utils/Constant.js";
 
-const sectionSchema = new SCHEMA({
-  title: { type: String, required: true },
-  icon: { type: String, required: true }, // Ensure this matches everywhere
-  content: { type: String, required: true }
-});
+const SCHEMA = mongoose.Schema;
+const pointsSchema = new SCHEMA({
+  icon:{
+    type: String,
+    required: true,
+  },
+  name:{
+    type: String,
+    required: true,
+  },
+  bulletPoints:[{
+    type: String,
+    required: true,
+  }]
+})
+const TermsandConSchema = new SCHEMA({
+  mainTag:{
+    type: String,
+    required: true,
+  },
+  mainHtext: {
+    type: String,
+    required: true,
+  },
+  mainDtext: {
+    type: String,
+    required: true,
+  },
 
-const termsAndConditionsSchema = new SCHEMA({
-  pageTitle: { type: String, default: "Terms & Conditions" },
-  pageSubtitle: { type: String, default: "Please read these terms carefully before using the XOLO ERP platform." },
+  shortDtext:{
+    type: String,
+    required: true,
+  },
 
-  sections: [sectionSchema],
+  points:[pointsSchema],
+  CTAHtext:{
+    type: String,
+    required: true,
+  },
+  CTADtext:{
+    type: String,
+    required: true,
+  },
+  CTALine1:{
+    type: String,
+    required: true,
+  },
+    CTALine2:{
+    type: String,
+    required: true,
+  },
+  CTALine3:{
+    type: String,
+    required: true,
+  },
+})
 
-  supportTitle: { type: String, required: true },
-  supportDesc: { type: String, required: true },
-  supportButtonText: { type: String, required: true },
-  supportButtonUrl: { type: String, required: true }
-}, { timestamps: true });
-
-export const TermsAndConditions = mongoose.model("TermsAndConditions", termsAndConditionsSchema);
+export const TermsandCondition = mongoose.model("TermsandCondition", TermsandConSchema);
